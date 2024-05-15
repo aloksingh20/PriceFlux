@@ -42,7 +42,6 @@ class PriceViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val searchQuery = searchQuery.value
             println("Searching for: $searchQuery")
-            delay(1000)
             state = state.copy(isLoading = true)
             val amazonResult = async { amazonScrapper.getSearchProducts(searchQuery) }
             val flipkartResult = async { flipkartScrapper.getSearchProducts(searchQuery) }
@@ -94,6 +93,15 @@ class PriceViewModel @Inject constructor(
 
     fun onSearchTextChange(text: String) {
         _searchQuery.value = text
+        if(_searchQuery.value.matches(regex = Regex("([0-9]+)"))){
+            scrapeAmazonPrice()
+        }
+        if(searchQuery.value.isEmpty()){
+            state = state.copy(
+                amazonInfo = emptyList(),
+                flipkartInfo = emptyList()
+            )
+        }
 
     }
 
