@@ -1,19 +1,16 @@
 package com.example.priceflux.presentation
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.priceflux.data.remote.amazon.RemoteDto
 import com.example.priceflux.data.remote.scrapper.AmazonScrapper
 import com.example.priceflux.data.remote.scrapper.FlipkartScraper
 import com.example.priceflux.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
@@ -55,26 +52,7 @@ class PriceViewModel @Inject constructor(
                 val size = minOf(amazonSize, flipkartSize)
                 val amazonInfo = amazonProducts.data?.subList(0, size) ?: emptyList()
                 val flipkartInfo = flipkartProducts.data?.subList(0, size) ?: emptyList()
-//
-//                val amazonList = mutableListOf<RemoteDto>()
-//
-//                val flipkartList = mutableListOf<RemoteDto>()
-//
-//                for (i in 0 until size) {
-//                    val amazonProduct :Set<String> = amazonInfo[i].productName.split("").toSet()
-//                    val flipkartProduct :Set<String> = flipkartInfo[i].productName.split("").toSet()
-//
-//                    val score = jaccardSimilarity( amazonProduct, flipkartProduct)
-//                    if(score>0.5){
-//                        amazonList.add(amazonInfo[i])
-//                        flipkartList.add(flipkartInfo[i])
-//                    }
-//                }
-//                Log.d("amazon", amazonList.toString())
-//                Log.d("flipkart", flipkartList.toString())
-
                 state.copy(
-
                     amazonInfo = amazonInfo,
                     flipkartInfo = flipkartInfo,
                     isLoading = false
@@ -91,16 +69,11 @@ class PriceViewModel @Inject constructor(
         }
     }
 
+
     fun onSearchTextChange(text: String) {
         _searchQuery.value = text
         if(_searchQuery.value.matches(regex = Regex("([0-9]+)"))){
             scrapeAmazonPrice()
-        }
-        if(searchQuery.value.isEmpty()){
-            state = state.copy(
-                amazonInfo = emptyList(),
-                flipkartInfo = emptyList()
-            )
         }
 
     }

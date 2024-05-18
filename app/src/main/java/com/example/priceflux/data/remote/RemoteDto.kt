@@ -1,4 +1,4 @@
-package com.example.priceflux.data.remote.amazon
+package com.example.priceflux.data.remote
 
 data class RemoteDto (
     val productName: String,

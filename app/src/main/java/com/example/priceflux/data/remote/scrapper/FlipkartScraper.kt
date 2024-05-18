@@ -1,7 +1,7 @@
 package com.example.priceflux.data.remote.scrapper
 
 import android.util.Log
-import com.example.priceflux.data.remote.amazon.RemoteDto
+import com.example.priceflux.data.remote.RemoteDto
 import com.example.priceflux.data.remote.flipkart.FlipkartRemoteApi
 import com.example.priceflux.util.Objects
 import com.example.priceflux.util.Resource
@@ -34,7 +34,7 @@ class FlipkartScraper@Inject constructor(private val scrapperExecuter: ScrapperE
                 val productRating = productElement.select("div.XQDdHH").text()
                 productsList.add(RemoteDto(productName, productPrice,productImage,productUrl,prodDescription,productRating))
             }
-            Log.d("FlipkartScraper", productsList.toString())
+//            Log.d("FlipkartScraper", productsList.toString())
             Resource.Success(productsList)
         } catch (e: Exception) {
             Log.d("FlipkartScraper", "Could not load products")
@@ -62,7 +62,7 @@ class FlipkartScraper@Inject constructor(private val scrapperExecuter: ScrapperE
                         .text() // Barcode search
                     else -> productElement.select("div._4rR01T, div.syl9yP").text() // Product name search
                 }
-                val productPrice = productElement.select("div._30jeq3").text()
+                val productPrice = productElement.select("div.Nx9bqj").text()
 
             Resource.Success(RemoteDto(productName, productPrice, productName, productUrl,"",""))
 

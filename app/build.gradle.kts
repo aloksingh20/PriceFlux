@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.play.services.analytics.impl)
+    implementation(libs.androidx.hilt.common)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -113,6 +115,12 @@ dependencies {
 //    lottie
     implementation (libs.lottie.compose)
 
+//    swipe
+    implementation (libs.swipe)
+
+//work manager
+    implementation (libs.androidx.work.runtime.ktx)
+    implementation ("androidx.hilt:hilt-work:1.2.0")
 
 
 }

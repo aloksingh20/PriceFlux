@@ -1,33 +1,37 @@
 package com.example.priceflux.presentation
 
 import android.content.Context
-import android.widget.Button
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -36,8 +40,8 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -46,33 +50,38 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.priceflux.R
-import com.example.priceflux.data.remote.amazon.RemoteDto
+import com.example.priceflux.data.remote.RemoteDto
+import com.example.priceflux.presentation.watchlist.WatchlistViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import me.saket.swipe.SwipeAction
+import me.saket.swipe.SwipeableActionsBox
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: PriceViewModel,
-    context:Context
+    context: Context,
+    watchlistViewModel: WatchlistViewModel
 ) {
+
     val state = viewModel.state
     val listState = rememberLazyListState()
     Scaffold(
@@ -81,7 +90,7 @@ fun HomeScreen(
                 title = "PriceFlux",
                 viewModel = viewModel,
                 onCameraClick = {
-                    navController.navigate("scanner")
+                    navController.navigate("qrscanner")
                 },
                 listState = listState
 
@@ -112,6 +121,7 @@ fun HomeScreen(
                         initialPage = 0,
                         pageCount = { tabs.size }
                     )
+                    val watchlistState = watchlistViewModel.state
 
                     Column (
                         modifier = Modifier
@@ -162,67 +172,64 @@ fun HomeScreen(
                                     // Inside LazyColumn's items block
                                     items(state.amazonInfo.size) { index ->
                                         val product = state.amazonInfo[index]
-                                        var isExpanded by remember { mutableStateOf(false) }
 
-                                        Box(modifier = Modifier.pointerInput(Unit) {
-                                            detectTapGestures(
-                                                onDoubleTap = {
-                                                    isExpanded = !isExpanded
-                                                }
-                                            )
-                                        }) {
-                                            ListItemCard(
-                                                product = product,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(5.dp)
-                                                    .offset {
-                                                        if (isExpanded) IntOffset(
-                                                            -300,
-                                                            0
-                                                        ) else IntOffset(0, 0)
-                                                    },
-                                                context = context,
-                                                text = "amazon"
-                                            )
+                                        val showWatchlistDialog = remember { mutableStateOf(false) }
+                                        Log.d("product",product.toString())
+                                        Log.d("Watchlist",watchlistState.prodInfo.toString())
+                                        watchlistViewModel.searchProduct(product.productName)
+                                        val isPresent = watchlistState.prodInfo.filter {
+                                            it.productName == product.productName
 
-                                            if (isExpanded) {
-                                                // Display the expanded content
-                                                val sheetState = rememberModalBottomSheetState()
-                                                val scope = rememberCoroutineScope()
-                                                var showBottomSheet by remember { mutableStateOf(false) }
-                                                Column(
-                                                    modifier = Modifier
-                                                        .align(Alignment.CenterEnd)
-                                                        .padding(end = 16.dp)
-                                                ) {
-                                                    Button(
-                                                        onClick = {
-                                                                  showBottomSheet = true
-                                                        },
-                                                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                                                    ) {
-                                                        Text(text = "Watchlist")
-                                                    }
-                                                    OutlinedButton(
-                                                        onClick = { },
-                                                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                                                    ) {
-                                                        Text(text = "Buy now")
-                                                    }
-                                                }
+                                        }
 
-                                                if (showBottomSheet) {
-                                                    ProductInfo(
-                                                        product,
-                                                        sheetState,
-                                                        scope,
-                                                        Modifier.fillMaxSize(),
-                                                        onDismissRequest = { showBottomSheet = false }
-                                                    )
+                                        val watchlist = SwipeAction(
+                                            icon = { Icon(if(isPresent.isNotEmpty()) {
+                                                Icons.Filled.RemoveRedEye
+                                            }else{
+                                                Icons.Outlined.RemoveRedEye
+                                            }, contentDescription = null , modifier = Modifier
+                                                .size(52.dp)
+                                                .padding(start = 15.dp)) },
+                                            background = if(isPresent.isNotEmpty()) {
+                                                Color.Yellow
+                                            }else{
+                                                Color.Green
+                                            },
+                                            isUndo = true,
+                                            onSwipe = {
+                                                if(isPresent.isNotEmpty()) {
+                                                    Toast.makeText(context,"Already in watchlist",Toast.LENGTH_SHORT).show()
+                                                }else {
+                                                    showWatchlistDialog.value = true
                                                 }
                                             }
+                                        )
+
+                                        SwipeableActionsBox (
+                                            endActions = listOf(watchlist)
+                                        ){
+                                            Box {
+                                                ListItemCard(
+                                                    product = product,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(5.dp),
+                                                    context = context,
+                                                    text = "amazon"
+                                                )
+                                            }
                                         }
+                                        if(showWatchlistDialog.value){
+                                            WatchlistAlertDialog(
+                                                onDismissRequest = { showWatchlistDialog.value = false },
+                                                onConfirmAdd = {
+                                                    watchlistViewModel.addToWatchlist(product)
+                                                    showWatchlistDialog.value = false }
+                                            )
+                                        }
+
+//
+
                                     }
 
                                 }
@@ -251,50 +258,62 @@ fun HomeScreen(
                                     items(state.flipkartInfo.size) { index ->
                                         // Display individual Flipkart product information
                                         val product = state.flipkartInfo[index]
-                                        var isExpanded by remember { mutableStateOf(false) }
-                                        Box(modifier = Modifier.pointerInput(Unit) {
-                                            detectTapGestures(
-                                                onDoubleTap = {
-                                                    isExpanded = !isExpanded
-                                                }
-                                            )
-                                        })  {
-
-                                            ListItemCard(product,
-                                                Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(5.dp)
-                                                    .offset {
-                                                        if (isExpanded) IntOffset(
-                                                            -300,
-                                                            0
-                                                        ) else IntOffset(0, 0)
-                                                    },
-                                                context,
-                                                text = "flipkart"
-                                            )
-                                            if (isExpanded) {
-                                                Column(
-                                                    modifier = Modifier
-                                                        .align(Alignment.CenterEnd)
-                                                        .padding(end = 16.dp)
-                                                ) {
-                                                    Button(
-                                                        onClick = { },
-                                                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                                                    ) {
-                                                        Text(text = "Watchlist")
-                                                    }
-                                                    OutlinedButton(
-                                                        onClick = { },
-                                                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                                                    ) {
-                                                        Text(text = "Buy now")
-                                                    }
-                                                }
-                                            }
+                                        val showWatchlistDialog = remember { mutableStateOf(false) }
+                                        Log.d("product",product.toString())
+                                        Log.d("Watchlist",watchlistState.prodInfo.toString())
+                                        watchlistViewModel.searchProduct(product.productName)
+                                        val isPresent = watchlistState.prodInfo.filter {
+                                            it.productName == product.productName
 
                                         }
+
+                                        val watchlist = SwipeAction(
+                                            icon = { Icon(if(isPresent.isNotEmpty()) {
+                                                Icons.Filled.RemoveRedEye
+                                            }else{
+                                                Icons.Outlined.RemoveRedEye
+                                            }, contentDescription = null , modifier = Modifier
+                                                .size(52.dp)
+                                                .padding(start = 15.dp)) },
+                                            background = if(isPresent.isNotEmpty()) {
+                                                Color.Yellow
+                                            }else{
+                                                Color.Green
+                                            },
+                                            isUndo = true,
+                                            onSwipe = {
+                                                if(isPresent.isNotEmpty()) {
+                                                    Toast.makeText(context,"Already in watchlist",Toast.LENGTH_SHORT).show()
+                                                }else {
+                                                    showWatchlistDialog.value = true
+                                                }
+                                            }
+                                        )
+
+                                        SwipeableActionsBox (
+                                            endActions = listOf(watchlist)
+                                        ){
+                                            Box {
+                                                ListItemCard(
+                                                    product = product,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(5.dp),
+                                                    context = context,
+                                                    text = "flipkart"
+                                                )
+                                            }
+                                        }
+                                        if(showWatchlistDialog.value){
+                                            WatchlistAlertDialog(
+                                                onDismissRequest = { showWatchlistDialog.value = false },
+                                                onConfirmAdd = {
+                                                    watchlistViewModel.addToWatchlist(product)
+                                                    showWatchlistDialog.value = false }
+                                            )
+                                        }
+
+//
                                     }
                                 }
                             }
@@ -443,3 +462,30 @@ fun ProductInfo(
         }
     }
 }
+
+@Composable
+fun WatchlistAlertDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmAdd: () -> Unit,
+){
+
+    AlertDialog(
+        onDismissRequest = { onDismissRequest() },
+        dismissButton = {
+            TextButton(onClick = { onDismissRequest() }) {
+                Text(text = "No")
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                onConfirmAdd()
+            }) {
+                Text(text = "Yes")
+            }
+        },
+        title = { Text("Watchlist Item?") },
+        text = { Text("Are you sure you want to Watchlist this item?") }
+    )
+
+}
+

@@ -43,6 +43,7 @@ import kotlinx.coroutines.delay
 // Modify the CameraPreview composable to accept a NavController parameter
 @Composable
 fun CameraPreview(
+    modifier: Modifier=Modifier,
     viewModel: PriceViewModel,
     navController: NavController
 ) {
@@ -85,13 +86,13 @@ fun CameraPreview(
            if(isMovingDownward){
                currentOffset += 20.dp.value // Adjust speed by changing this value
                delay(20) // Adjust duration by changing this value
-               if(currentOffset >= 1500.dp.value){
+               if(currentOffset >= 1300.dp.value){
                    isMovingDownward = false
                }
            }else{
                currentOffset -= 20.dp.value // Adjust speed by changing this value
                delay(20) // Adjust duration by changing this value
-               if(currentOffset <= 700.dp.value){
+               if(currentOffset <= 500.dp.value){
                    isMovingDownward = true
                }
            }
@@ -101,7 +102,7 @@ fun CameraPreview(
 
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .width(600.dp)
             .height(500.dp)
             .padding(60.dp),
@@ -139,6 +140,7 @@ fun CameraPreview(
                                         ).show()
                                         navController.popBackStack()
                                         navController.navigate("home")
+
                                         break
                                     }
 

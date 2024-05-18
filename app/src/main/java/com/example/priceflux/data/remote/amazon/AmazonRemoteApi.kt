@@ -1,5 +1,6 @@
 package com.example.priceflux.data.remote.amazon
 
+import com.example.priceflux.data.remote.RemoteDto
 import com.example.priceflux.util.Resource
 
 interface AmazonRemoteApi {

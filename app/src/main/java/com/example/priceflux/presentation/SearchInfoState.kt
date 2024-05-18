@@ -1,6 +1,6 @@
 package com.example.priceflux.presentation
 
-import com.example.priceflux.data.remote.amazon.RemoteDto
+import com.example.priceflux.data.remote.RemoteDto
 
 data class SearchInfoState(
     val amazonInfo:List<RemoteDto> = emptyList(),

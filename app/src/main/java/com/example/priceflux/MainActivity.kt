@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.priceflux.presentation.HomeScreen
 import com.example.priceflux.presentation.NextScreen
 import com.example.priceflux.presentation.PriceViewModel
+import com.example.priceflux.presentation.bottomNavigation.BottomNavigation
 import com.example.priceflux.ui.theme.PriceFluxTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.Executors
@@ -28,35 +29,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             PriceFluxTheme {
-                val viewModel = hiltViewModel<PriceViewModel>()
-
-
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(
-                        modifier = Modifier.padding(innerPadding),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        val navController = rememberNavController()
-                        val viewModel = hiltViewModel<PriceViewModel>()
-                        NavHost(navController = navController, startDestination = "home" , modifier = Modifier.fillMaxSize()){
-                            composable("home"){
-                                HomeScreen(
-                                    navController,
-                                    viewModel,
-                                    this@MainActivity
-                                )
-                            }
-                            composable("scanner"){
-                                val executor = Executors.newSingleThreadExecutor()
-                                CameraPreview(
-                                    viewModel,navController
-                                )
-                            }
-
-                        }
-
-                    }
-                }
+                BottomNavigation(context = this@MainActivity)
             }
         }
     }

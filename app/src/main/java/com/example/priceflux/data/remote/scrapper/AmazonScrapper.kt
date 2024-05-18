@@ -2,7 +2,7 @@ package com.example.priceflux.data.remote.scrapper
 
 import android.util.Log
 import com.example.priceflux.data.remote.amazon.AmazonRemoteApi
-import com.example.priceflux.data.remote.amazon.RemoteDto
+import com.example.priceflux.data.remote.RemoteDto
 import com.example.priceflux.util.Objects
 import com.example.priceflux.util.Resource
 import javax.inject.Inject
@@ -44,7 +44,7 @@ class AmazonScrapper @Inject constructor(private val scrapperExecuter: ScrapperE
                             )
                         }
                     }
-            Log.d("amazon_products",productsList.toString())
+//            Log.d("amazon_products",productsList.toString())
                  Resource.Success(productsList)
              } catch (e: Exception) {
 
@@ -53,7 +53,7 @@ class AmazonScrapper @Inject constructor(private val scrapperExecuter: ScrapperE
 
     }
 
-    override suspend fun getProductsDetails(searchQuery: String): Resource<RemoteDto >{
+    override suspend fun getProductsDetails(searchQuery: String): Resource<RemoteDto>{
         val searchUrl = "${Objects.AMAZON_URL}s?k=$searchQuery"
         return try {
             val response = scrapperExecuter.connectWithRetry(searchUrl)
