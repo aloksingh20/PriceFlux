@@ -7,9 +7,9 @@ import javax.inject.Singleton
 
 @Singleton
 class NotificationRepository @Inject constructor(
-    private val appDatabase: AppDatabase
+      appDatabase: AppDatabase
 ){
-    val notificationDao = appDatabase.notificationDao
+    private val notificationDao = appDatabase.notificationDao
 
     suspend fun insert(notification: NotificationEntity) = notificationDao.insert(notification)
 

@@ -1,4 +1,4 @@
-package com.example.priceflux.presentation
+package com.example.priceflux.presentation.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

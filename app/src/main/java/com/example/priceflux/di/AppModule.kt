@@ -2,6 +2,7 @@ package com.example.priceflux.di
 
 import android.app.Application
 import androidx.room.Room
+import com.example.priceflux.data.Repository.NotificationRepository
 import com.example.priceflux.data.Repository.WatchlistRepository
 import com.example.priceflux.data.local.AppDatabase
 import com.example.priceflux.data.remote.scrapper.AmazonScrapper
@@ -45,6 +46,14 @@ object AppModule {
     fun provideRepository(appDatabase: AppDatabase): WatchlistRepository {
         return WatchlistRepository(appDatabase)
     }
+
+    @Provides
+    @Singleton
+    fun provideNotificationRepository(appDatabase: AppDatabase): NotificationRepository {
+        return NotificationRepository(appDatabase)
+    }
+
+
 
 
 }

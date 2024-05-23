@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("dagger.hilt.android.plugin")
     id ("kotlin-kapt")
+    id("com.google.devtools.ksp")
+
 }
 
 android {
@@ -120,7 +122,9 @@ dependencies {
 
 //work manager
     implementation (libs.androidx.work.runtime.ktx)
-    implementation ("androidx.hilt:hilt-work:1.2.0")
+    implementation (libs.androidx.hilt.work)
+
+
 
 
 }

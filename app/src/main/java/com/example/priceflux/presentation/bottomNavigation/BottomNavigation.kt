@@ -31,8 +31,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.priceflux.presentation.HomeScreen
-import com.example.priceflux.presentation.PriceViewModel
+import com.example.priceflux.presentation.home.HomeScreen
+import com.example.priceflux.presentation.home.PriceViewModel
 import com.example.priceflux.presentation.notification.NotificationScreen
 import com.example.priceflux.presentation.notification.NotificationViewmodel
 import com.example.priceflux.presentation.watchlist.WatchlistScreen
@@ -130,7 +130,8 @@ fun BottomNavigation(
                         }
                         composable("notification") {
                             val notificationViewModel = hiltViewModel <NotificationViewmodel>()
-                            NotificationScreen(notificationViewModel
+                            NotificationScreen(notificationViewModel,
+                                navController = navController
                             )
                         }
                         composable("watchlist"){

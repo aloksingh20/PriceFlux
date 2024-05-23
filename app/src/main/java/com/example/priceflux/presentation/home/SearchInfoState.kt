@@ -1,4 +1,4 @@
-package com.example.priceflux.presentation
+package com.example.priceflux.presentation.home
 
 import com.example.priceflux.data.remote.RemoteDto
 

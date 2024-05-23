@@ -16,8 +16,10 @@ import javax.inject.Inject
 
 @HiltAndroidApp
 class App:Application() , Configuration.Provider {
+
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
+
     override fun onCreate() {
         super.onCreate()
         ContextProvider.context = this.applicationContext
@@ -28,9 +30,10 @@ class App:Application() , Configuration.Provider {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val workRequest = PeriodicWorkRequestBuilder<ScraperWorker>(2, TimeUnit.MINUTES)
+        val workRequest = PeriodicWorkRequestBuilder<ScraperWorker>(3, TimeUnit.MINUTES)
             .setConstraints(constraints)
             .build()
+
 
         WorkManager.getInstance(this)
             .enqueueUniquePeriodicWork(

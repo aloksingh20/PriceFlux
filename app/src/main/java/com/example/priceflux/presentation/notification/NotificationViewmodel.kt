@@ -44,7 +44,9 @@ class NotificationViewmodel @Inject constructor(
     }
     fun addNotification(notification: NotificationEntity){
         viewModelScope.launch {
+
             notificationRepository.insert(notification)
+            state =state.copy(notificationInfo = state.notificationInfo.apply {  add(notification)  })
         }
     }
 

@@ -1,4 +1,4 @@
-package com.example.priceflux.presentation
+package com.example.priceflux.presentation.home.scanner
 
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
